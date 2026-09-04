@@ -1,0 +1,95 @@
+name: Update IANA registries
+
+on:
+  schedule:
+    # Daily at 06:00 UTC.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve dependencies
+        run: dart pub get
+
+      - name: Download registries
+        id: download
+        run: |
+          result="$(dart run generator:download | tail -n 1)"
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Detect changed registries
+        if: steps.download.outputs.result == 'changed'
+        id: changes
+        run: |
+          subtags_data="tool/generator/data/language-subtag-registry.txt"
+          extensions_data="tool/generator/data/language-tag-extensions-registry.txt"
+          changed="$(git status --porcelain)"
+          echo "$changed"
+          if echo "$changed" | grep -q "$subtags_data"; then
+            echo "subtags=true" >> "$GITHUB_OUTPUT"
+          fi
+          if echo "$changed" | grep -q "$extensions_data"; then
+            echo "extensions=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Regenerate sources
+        if: steps.download.outputs.result == 'changed'
+        run: dart run generator:generate
+
+      - name: Bump sealed_language_subtags
+        if: steps.changes.outputs.subtags == 'true'
+        id: subtags
+        run: |
+          version="$(dart run generator:version sealed_language_subtags --write 2>/dev/null | tail -n 1)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Bump sealed_language_extensions
+        if: steps.changes.outputs.extensions == 'true'
+        id: extensions
+        run: |
+          version="$(dart run generator:version sealed_language_extensions --write 2>/dev/null | tail -n 1)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Verify
+        if: steps.download.outputs.result == 'changed'
+        run: |
+          dart pub get
+          dart analyze packages
+          dart test packages/sealed_language_subtags packages/sealed_language_extensions
+
+      - name: Commit, push and tag
+        if: steps.download.outputs.result == 'changed'
+        env:
+          SUBTAGS_VERSION: ${{ steps.subtags.outputs.version }}
+          EXTENSIONS_VERSION: ${{ steps.extensions.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git commit -m "chore: update IANA registries"
+          git push
+          if [ -n "$SUBTAGS_VERSION" ]; then
+            git tag "sealed_language_subtags-v$SUBTAGS_VERSION"
+            git push origin "sealed_language_subtags-v$SUBTAGS_VERSION"
+          fi
+          if [ -n "$EXTENSIONS_VERSION" ]; then
+            git tag "sealed_language_extensions-v$EXTENSIONS_VERSION"
+            git push origin "sealed_language_extensions-v$EXTENSIONS_VERSION"
+          fi

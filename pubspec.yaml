@@ -1,0 +1,13 @@
+name: _sealed_iana_lang_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+workspace:
+  - packages/sealed_language_subtags
+  - packages/sealed_language_extensions
+  - tool/generator
+
+dev_dependencies:
+  test: ^1.25.0

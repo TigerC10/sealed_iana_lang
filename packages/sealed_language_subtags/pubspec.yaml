@@ -1,0 +1,23 @@
+name: sealed_language_subtags
+description: >-
+  IANA Language Subtag Registry (BCP 47) as compile-time constant,
+  tree-shakable, sealed Dart classes: languages, scripts, regions and variants.
+version: 1.202608.8
+repository: https://github.com/tigerc10/sealed_iana_lang
+homepage: https://github.com/tigerc10/sealed_iana_lang/tree/main/packages/sealed_language_subtags
+issue_tracker: https://github.com/tigerc10/sealed_iana_lang/issues
+topics:
+  - i18n
+  - l10n
+  - bcp47
+  - iso-639
+  - languages
+
+environment:
+  sdk: ^3.6.0
+
+resolution: workspace
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0

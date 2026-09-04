@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve dependencies
+        run: dart pub get
+
+      - name: Verify generated sources are up to date
+        run: |
+          dart run generator:generate
+          if ! git diff --quiet; then
+            echo "Generated sources are out of date. Run 'dart run generator:generate'."
+            git --no-pager diff --stat
+            exit 1
+          fi
+
+      - name: Analyze
+        run: dart analyze packages tool
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed packages tool
+
+      - name: Test with coverage
+        run: |
+          dart pub global activate coverage
+          for pkg in sealed_language_subtags sealed_language_extensions; do
+            pushd "packages/$pkg" >/dev/null
+            dart test --coverage=coverage
+            dart pub global run coverage:format_coverage \
+              --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
+            popd >/dev/null
+          done

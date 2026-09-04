@@ -1,0 +1,23 @@
+name: sealed_language_extensions
+description: >-
+  IANA Language Tag Extensions Registry (BCP 47) as compile-time constant,
+  tree-shakable, sealed Dart classes for the registered locale extensions.
+version: 1.201404.2
+repository: https://github.com/tigerc10/sealed_iana_lang
+homepage: https://github.com/tigerc10/sealed_iana_lang/tree/main/packages/sealed_language_extensions
+issue_tracker: https://github.com/tigerc10/sealed_iana_lang/issues
+topics:
+  - i18n
+  - l10n
+  - bcp47
+  - extensions
+  - locale
+
+environment:
+  sdk: ^3.6.0
+
+resolution: workspace
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0
