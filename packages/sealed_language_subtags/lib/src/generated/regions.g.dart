@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 //
 // Source: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
-// Registry File-Date: 2026-08-08
+// Registry File-Date: 2026-09-17
 //
 // Regenerate with: dart run generator:generate
 
@@ -284,7 +284,7 @@ const List<Region> regions = [
   Region(subtag: 'NL', descriptions: ['Netherlands'], added: '2005-10-16'),
   Region(subtag: 'NO', descriptions: ['Norway'], added: '2005-10-16'),
   Region(subtag: 'NP', descriptions: ['Nepal'], added: '2005-10-16'),
-  Region(subtag: 'NR', descriptions: ['Nauru'], added: '2005-10-16'),
+  Region(subtag: 'NR', descriptions: ['Naoero', 'Nauru'], added: '2005-10-16'),
   Region(
       subtag: 'NT',
       descriptions: ['Neutral Zone'],

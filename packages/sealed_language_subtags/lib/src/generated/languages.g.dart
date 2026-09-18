@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 //
 // Source: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
-// Registry File-Date: 2026-08-08
+// Registry File-Date: 2026-09-17
 //
 // Regenerate with: dart run generator:generate
 
